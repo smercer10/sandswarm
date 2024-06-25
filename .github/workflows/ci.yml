@@ -1,0 +1,96 @@
+name: Sandswarm CI
+
+on:
+  pull_request:
+  push:
+  schedule:
+    - cron: 0 1 * * MON
+
+permissions: read-all
+
+jobs:
+  build-and-test:
+    name: Build and test code
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: "5.2"
+
+      - run: opam install . --deps-only -t
+
+      - run: dune build
+
+      - run: dune runtest
+
+  analysis:
+    name: Submit dependencies for vulnerability alerts
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: "5.2"
+          dune-cache: true
+
+      - uses: ocaml/setup-ocaml/analysis@v2
+
+  lint-doc:
+    name: Check doc comments
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: "5.2"
+          dune-cache: true
+
+      - uses: ocaml/setup-ocaml/lint-doc@v2
+
+  lint-fmt:
+    name: Check code formatting
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: "5.2"
+          dune-cache: true
+
+      - uses: ocaml/setup-ocaml/lint-fmt@v2
+
+  lint-opam:
+    name: Check opam file
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: "5.2"
+          dune-cache: true
+
+      - uses: ocaml/setup-ocaml/lint-opam@v2
