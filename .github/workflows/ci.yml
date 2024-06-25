@@ -30,9 +30,9 @@ jobs:
 
       - run: opam install . --deps-only -t
 
-      - run: dune build
+      - run: opam exec -- dune build
 
-      - run: dune runtest
+      - run: opam exec -- dune runtest
 
   analysis:
     name: Submit dependencies for vulnerability alerts
