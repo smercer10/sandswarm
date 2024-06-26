@@ -32,7 +32,7 @@ jobs:
 
       - run: opam exec -- dune build
 
-      - run: opam exec -- dune runtest
+      - run: opam exec -- dune test
 
   lint-doc:
     name: Check doc comments
