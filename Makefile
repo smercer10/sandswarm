@@ -1,13 +1,13 @@
 .PHONY: all clean run test
 
 all:
-	@dune build
+	dune build
 
 clean:
-	@dune clean
+	dune clean
 
 run:
-	@dune exec sandswarm
+	dune exec sandswarm
 
 test:
-	@dune test
+	dune test
