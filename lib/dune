@@ -1,2 +1,3 @@
 (library
- (name sandswarm))
+ (name sandswarm)
+ (libraries yojson))
