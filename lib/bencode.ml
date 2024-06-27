@@ -1,6 +1,13 @@
+open Base
+
 let decode_string_to_json s =
-  let delim_idx = String.index s ':' in
-  let len = int_of_string (String.sub s 0 delim_idx) in
-  let data = String.sub s (delim_idx + 1) len in
-  `String data
+  match String.lsplit2 s ~on:':' with
+  | Some (len, data) ->
+    (match Int.of_string_opt len with
+     | Some int ->
+       if String.length data >= int
+       then Ok (`String (String.prefix data int))
+       else Error "Data is too short"
+     | None -> Error "Length is invalid")
+  | None -> Error "String format is invalid"
 ;;
