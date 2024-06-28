@@ -19,7 +19,7 @@
  (name sandswarm)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml dune base yojson)
+ (depends ocaml dune base stdio ppx_expect yojson)
  (tags
   (topics "to describe" your project)))
 

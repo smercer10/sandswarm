@@ -1,2 +1,5 @@
-(test
- (name test_sandswarm))
+(library
+ (name test_sandswarm)
+ (libraries base stdio yojson sandswarm)
+ (inline_tests)
+ (preprocess (pps ppx_expect)))
