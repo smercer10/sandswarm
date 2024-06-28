@@ -20,13 +20,13 @@ let%expect_test "decode_byte_string" =
   test "16:Not enough data";
   [%expect {| Data is shorter than expected |}];
   test ":Missing length";
-  [%expect {| Length is invalid |}];
+  [%expect {| Length is not a valid integer |}];
   test "1B:Non-numeric length";
-  [%expect {| Length is invalid |}];
+  [%expect {| Length is not a valid integer |}];
   test "18.0:Non-integer length";
-  [%expect {| Length is invalid |}];
+  [%expect {| Length is not a valid integer |}];
   test "-15:Negative length";
-  [%expect {| Length is invalid |}];
+  [%expect {| Length is not a valid integer |}];
   test "13Missing colon";
   [%expect {| Delimiter is missing or invalid |}]
 ;;
