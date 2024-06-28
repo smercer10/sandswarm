@@ -11,20 +11,22 @@ let%expect_test "decode_string_to_json" =
   let test s = print_json_result (Bencode.decode_string_to_json s) in
   test "0:";
   [%expect {| "" |}];
-  test "9:ExactData";
-  [%expect {| "ExactData" |}];
-  test "7:ExtraData";
-  [%expect {| "ExtraDa" |}];
-  test "18:$pecial-Ch@ract3rs";
-  [%expect {| "$pecial-Ch@ract3rs" |}];
-  test "15:NotEnoughData";
+  test "10:Exact data";
+  [%expect {| "Exact data" |}];
+  test "8:Extra data";
+  [%expect {| "Extra da" |}];
+  test "19:$pec1al-ch@ract3rs!";
+  [%expect {| "$pec1al-ch@ract3rs!" |}];
+  test "16:Not enough data";
   [%expect {| Data is too short |}];
-  test "I6:NonNumericLength";
+  test ":Missing length";
   [%expect {| Length is invalid |}];
-  test "16.0:NonIntegerLength";
+  test "1B:Non-numeric length";
   [%expect {| Length is invalid |}];
-  test "-14:NegativeLength";
+  test "18.0:Non-integer length";
   [%expect {| Length is invalid |}];
-  test "12MissingColon";
+  test "-15:Negative length";
+  [%expect {| Length is invalid |}];
+  test "13Missing colon";
   [%expect {| String format is invalid |}]
 ;;
