@@ -1,9 +1,6 @@
 open! Base
 
-(** [decode_byte_string b] decodes a valid bencoded byte string [b] to JSON
-    representation. Returns [Error] if the encoding is invalid. *)
-val decode_byte_string : string -> ([> `String of string ], string) Result.t
-
-(** [decode_integer b] decodes a valid bencoded integer [b] to JSON representation.
-    Returns [Error] if the encoding is invalid. *)
-val decode_integer : string -> ([> `Int of int ], string) Result.t
+(** [bval] is an [Angstrom] parser for bencoded values. For valid inputs, a JSON
+    representation of the value is returned. If the input has invalid encoding, the
+    parser will raise an exception. *)
+val bval : Yojson.Basic.t Angstrom.t

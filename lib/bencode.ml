@@ -1,30 +1,44 @@
 open! Base
+open Angstrom
 
-let decode_byte_string b =
-  match String.lsplit2 b ~on:':' with
-  | Some (len, data) ->
-    (match Int.of_string_opt len with
-     | Some v when v >= 0 ->
-       if String.length data >= v
-       then Ok (`String (String.prefix data v))
-       else Error "Data is shorter than expected"
-     | _ -> Error "Length is not a valid integer")
-  | _ -> Error "Delimiter is missing or invalid"
+let json_of_str s = `String s
+let json_of_int i = `Int i
+let json_of_lst l = `List l
+let json_of_dic d = `Assoc d
+
+let bstr =
+  let* len = take_while1 Char.is_digit >>| Int.of_string in
+  char ':' *> take len >>| json_of_str
 ;;
 
-let decode_integer b =
-  let len = String.length b in
-  if len < 3
-  then Error "Not enough data to decode"
-  else if Char.( <> ) b.[0] 'i' || Char.( <> ) b.[len - 1] 'e'
-  then Error "At least one delimiter is missing or invalid"
-  else if String.equal b "i-0e"
-  then Error "-0 is not a valid integer"
-  else if Char.equal b.[1] '0' && len > 3
-  then Error "Integers cannot be padded with 0"
-  else (
-    let num = String.sub b ~pos:1 ~len:(len - 2) in
-    match Int.of_string_opt num with
-    | Some v -> Ok (`Int v)
-    | _ -> Error "Data is not a valid integer")
+let is_valid_int sign dgts =
+  not
+    ((String.equal sign "-" && String.equal dgts "0")
+     || (Char.equal dgts.[0] '0' && String.length dgts > 1))
+;;
+
+let bint =
+  char 'i'
+  *>
+  let* sign = option "" (string "-") in
+  let* dgts = take_while1 Char.is_digit in
+  char 'e'
+  *>
+  if is_valid_int sign dgts
+  then return (sign ^ dgts |> Int.of_string |> json_of_int)
+  else fail "Integer encoding is invalid"
+;;
+
+let bval =
+  fix (fun bval ->
+    let blst = char 'l' *> many bval <* char 'e' >>| json_of_lst in
+    let bdic =
+      char 'd' *> many (both bstr bval)
+      <* char 'e'
+      >>| List.map ~f:(fun (k, v) ->
+        match k with
+        | `String s -> s, v)
+      >>| json_of_dic
+    in
+    choice ~failure_msg:"Value encoding is invalid" [ bstr; bint; blst; bdic ])
 ;;

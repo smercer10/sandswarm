@@ -1,3 +1,3 @@
 (library
  (name sandswarm)
- (libraries base yojson))
+ (libraries base angstrom yojson))
