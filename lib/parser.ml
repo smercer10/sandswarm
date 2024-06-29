@@ -26,7 +26,7 @@ let bint =
   *>
   if is_valid_int sign dgts
   then return (sign ^ dgts |> Int.of_string |> json_of_int)
-  else fail "Integer encoding is invalid"
+  else fail "Invalid integer encoding"
 ;;
 
 let bval =
@@ -40,5 +40,5 @@ let bval =
         | `String s -> s, v)
       >>| json_of_dic
     in
-    choice ~failure_msg:"Value encoding is invalid" [ bstr; bint; blst; bdic ])
+    choice ~failure_msg:"Invalid value encoding" [ bstr; bint; blst; bdic ])
 ;;
