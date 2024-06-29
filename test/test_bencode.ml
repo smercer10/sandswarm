@@ -8,7 +8,11 @@ let print_json_result = function
 ;;
 
 let%expect_test "decode_byte_string" =
-  let test s = print_json_result (Bencode.decode_byte_string s) in
+  let test b = print_json_result (Bencode.decode_byte_string b) in
+  test "";
+  [%expect {| Delimiter is missing or invalid |}];
+  test ":";
+  [%expect {| Length is not a valid integer |}];
   test "0:";
   [%expect {| "" |}];
   test "10:Exact data";
@@ -29,4 +33,34 @@ let%expect_test "decode_byte_string" =
   [%expect {| Length is not a valid integer |}];
   test "13Missing colon";
   [%expect {| Delimiter is missing or invalid |}]
+;;
+
+let%expect_test "decode_integer" =
+  let test b = print_json_result (Bencode.decode_integer b) in
+  test "";
+  [%expect {| Not enough data to decode |}];
+  test "ie";
+  [%expect {| Not enough data to decode |}];
+  test "i0e";
+  [%expect {| 0 |}];
+  test "i1e";
+  [%expect {| 1 |}];
+  test "i2345e";
+  [%expect {| 2345 |}];
+  test "i-678e";
+  [%expect {| -678 |}];
+  test "910e";
+  [%expect {| At least one delimiter is missing or invalid |}];
+  test "i11";
+  [%expect {| At least one delimiter is missing or invalid |}];
+  test "1213i14e15";
+  [%expect {| At least one delimiter is missing or invalid |}];
+  test "i-0e";
+  [%expect {| -0 is not a valid integer |}];
+  test "i016e";
+  [%expect {| Integers cannot be padded with 0 |}];
+  test "i171B19e";
+  [%expect {| Data is not a valid integer |}];
+  test "i20.0e";
+  [%expect {| Data is not a valid integer |}]
 ;;

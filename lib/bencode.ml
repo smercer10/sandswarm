@@ -19,7 +19,7 @@ let decode_integer b =
   else if Char.( <> ) b.[0] 'i' || Char.( <> ) b.[len - 1] 'e'
   then Error "At least one delimiter is missing or invalid"
   else if String.equal b "i-0e"
-  then Error "-0 is an invalid integer"
+  then Error "-0 is not a valid integer"
   else if Char.equal b.[1] '0' && len > 3
   then Error "Integers cannot be padded with 0"
   else (
